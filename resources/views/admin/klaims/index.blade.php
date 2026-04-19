@@ -44,23 +44,24 @@
     .user-info { display: flex; align-items: center; gap: 12px; }
     .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--charcoal); color: var(--white); font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 14px; }
     .user-details strong { display: block; font-size: 14px; color: var(--charcoal); }
-    .status-badge { display: inline-flex; align-items: center; justify-content: center; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; }
-    .status-pending { background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; }
-    .status-diproses { background: #E0F2FE; color: #0369A1; border: 1px solid #BAE6FD; }
-    .status-dikirim { background: #F3E8FF; color: #7E22CE; border: 1px solid #E9D5FF; }
-    .status-selesai { background: #DCFCE7; color: #166534; border: 1px solid #BBF7D0; }
-    .status-ditolak { background: #FEE2E2; color: #B91C1C; border: 1px solid #FECACA; }
+    .status-badge { display: inline-flex; align-items: center; justify-content: center; padding: 6px 14px; border-radius: 50px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+    .status-pending { background: #FFF7ED; color: #C2410C; border: 1px solid #FFEDD5; }
+    .status-diproses { background: #EFF6FF; color: #1D4ED8; border: 1px solid #DBEAFE; }
+    .status-dikirim { background: #F5F3FF; color: #6D28D9; border: 1px solid #EDE9FE; }
+    .status-selesai { background: #ECFDF5; color: #047857; border: 1px solid #D1FAE5; }
+    .status-ditolak { background: #FFF1F2; color: #BE123C; border: 1px solid #FFE4E6; }
+    
     .table-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-    .btn-action { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; width: 100%; }
-    .btn-approve { background: #DCFCE7; color: #166534; border: 1px solid #BBF7D0; }
-    .btn-approve:hover { background: #bbf7d0; transform: translateY(-2px); }
-    .btn-reject { background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
-    .btn-reject:hover { background: #FECACA; transform: translateY(-2px); }
-    .btn-ship { background: #E0F2FE; color: #0369A1; border: 1px solid #BAE6FD; }
-    .btn-ship:hover { background: #BAE6FD; transform: translateY(-2px); }
-    .btn-complete { background: #F3E8FF; color: #7E22CE; border: 1px solid #E9D5FF; }
-    .btn-complete:hover { background: #E9D5FF; transform: translateY(-2px); }
-    .btn-disabled { background: var(--cream-bg); color: var(--sage-dark); border: 1px solid var(--sage-border); cursor: not-allowed; }
+    .btn-action { padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .btn-approve { background: #1D4ED8; color: #FFFFFF; }
+    .btn-approve:hover { background: #1E40AF; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(29, 78, 216, 0.2); }
+    .btn-reject { background: #FFFFFF; color: #BE123C; border: 1.5px solid #FECACA; }
+    .btn-reject:hover { background: #FFF1F2; color: #9F1239; transform: translateY(-2px); }
+    .btn-ship { background: #7E22CE; color: #FFFFFF; }
+    .btn-ship:hover { background: #6B21A8; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(126, 34, 206, 0.2); }
+    .btn-complete { background: #047857; color: #FFFFFF; }
+    .btn-complete:hover { background: #065F46; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(4, 120, 87, 0.2); }
+    .btn-disabled { background: #F3F4F6; color: #9CA3AF; cursor: not-allowed; border: 1px solid #E5E7EB; }
     
     .empty-state { text-align: center; padding: 40px 20px; }
     .empty-state-icon { font-size: 48px; color: var(--sage-secondary); margin-bottom: 16px; }

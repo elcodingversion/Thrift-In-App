@@ -157,6 +157,12 @@
         </a>
         <div class="nav-links">
             <a href="{{ route('customer.klaim.index') }}" class="btn btn-outline" style="border: none;"><i class="fas fa-arrow-left"></i> Dasbor Profil</a>
+            <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+                @csrf
+                <button type="submit" class="btn btn-outline" style="border-radius: 50px; padding: 10px 20px; font-size: 14px;">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </form>
         </div>
     </nav>
 
@@ -203,33 +209,87 @@
                 
                 <!-- KIRI: INFORMASI TRANSAKSI -->
                 <div class="invoice-info">
-                    <div class="info-block">
-                        <span class="info-label">Tanggal Pengajuan Pesanan</span>
-                        <span class="info-value"><i class="far fa-calendar-alt"></i> {{ $klaim->created_at->format('d F Y - H:i') }} WIB</span>
+                    <!-- TIMELINE TRACKING (NEW) -->
+                    <div class="info-block" style="margin-bottom: 40px;">
+                        <span class="info-label"><i class="fas fa-route" style="margin-right: 6px;"></i> Perjalanan Paket Saya</span>
+                        <div class="shipping-timeline" style="margin-top: 24px; position: relative; padding-left: 30px;">
+                            <style>
+                                .timeline-item { position: relative; padding-bottom: 30px; }
+                                .timeline-item::before { content: ''; position: absolute; left: -21px; top: 0; width: 2px; height: 100%; background: var(--sage-border); }
+                                .timeline-item:last-child::before { display: none; }
+                                .timeline-dot { position: absolute; left: -26px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: var(--sage-border); border: 2px solid var(--white); z-index: 1; }
+                                .timeline-content { display: flex; flex-direction: column; gap: 4px; }
+                                .timeline-status { font-size: 14px; font-weight: 700; color: var(--charcoal); }
+                                .timeline-time { font-size: 11px; color: var(--sage-dark); font-weight: 500; }
+                                .active-step .timeline-dot { background: var(--sage-dark); transform: scale(1.3); box-shadow: 0 0 0 4px rgba(110, 124, 111, 0.2); }
+                                .active-step .timeline-status { color: var(--charcoal); font-size: 15px; }
+                            </style>
+
+                            <!-- Step 4: Selesai -->
+                            <div class="timeline-item {{ $statusClass == 'Selesai' ? 'active-step' : '' }}" style="{{ $statusClass == 'Dibatalkan' ? 'display:none;' : '' }}">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <span class="timeline-status">Selesai</span>
+                                    @if($statusClass == 'Selesai')
+                                        <span class="timeline-time">Barang sudah diterima dengan baik.</span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Dikirim -->
+                            <div class="timeline-item {{ $statusClass == 'Dikirim' ? 'active-step' : '' }}" style="{{ in_array($statusClass, ['Menunggu', 'Pending', 'Diproses', 'Dibatalkan']) && $statusClass != 'Dikirim' && $statusClass != 'Selesai' ? 'opacity: 0.4;' : '' }}">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <span class="timeline-status">Sedang Dikirim</span>
+                                    @if($klaim->resi_pengiriman)
+                                        <span class="timeline-time">Nomor Resi: {{ $klaim->resi_pengiriman }}</span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Diproses -->
+                            <div class="timeline-item {{ $statusClass == 'Diproses' ? 'active-step' : '' }}" style="{{ in_array($statusClass, ['Menunggu', 'Pending', 'Dibatalkan']) && $statusClass != 'Diproses' && !in_array($statusClass, ['Dikirim', 'Selesai']) ? 'opacity: 0.4;' : '' }}">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <span class="timeline-status">Diproses / Dikemas</span>
+                                    <span class="timeline-time">Pesanan sedang disiapkan oleh toko.</span>
+                                </div>
+                            </div>
+
+                            <!-- Step 1: Menunggu -->
+                            <div class="timeline-item {{ ($statusClass == 'Menunggu' || $statusClass == 'Pending') ? 'active-step' : '' }}">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <span class="timeline-status">Pemesanan Berhasil</span>
+                                    <span class="timeline-time">{{ $klaim->created_at->format('d M Y, H:i') }} WIB</span>
+                                </div>
+                            </div>
+
+                            @if($statusClass == 'Dibatalkan' || $statusClass == 'Ditolak')
+                            <div class="timeline-item active-step">
+                                <div class="timeline-dot" style="background: #EF4444;"></div>
+                                <div class="timeline-content">
+                                    <span class="timeline-status" style="color: #B91C1C;">Dibatalkan</span>
+                                    <span class="timeline-time">Pesanan tidak dapat diproses.</span>
+                                </div>
+                            </div>
+                            @endif
+                        </div>
                     </div>
 
-                    @if ($klaim->updated_at > $klaim->created_at)
-                    <div class="info-block">
-                        <span class="info-label">Pembaruan Sistem Terakhir</span>
-                        <span class="info-value"><i class="fas fa-history"></i> {{ $klaim->updated_at->format('d F Y - H:i') }} WIB</span>
-                    </div>
-                    @endif
-
-                    <div class="info-block" style="margin-top: 16px; padding: 16px; background: #F9FAFB; border-radius: 12px; border: 1px dashed var(--sage-border);">
-                        <span class="info-label"><i class="fas fa-map-marker-alt" style="color: var(--sage-dark);"></i> Alamat Pengiriman</span>
-                        <span class="info-value" style="font-size: 14px; margin-top: 4px;">{{ $klaim->alamat_pengiriman ?? 'Alamat tidak disertakan di sistem lama.' }}</span>
-                        
-                        @if ($klaim->resi_pengiriman)
-                            <hr style="border: 0; border-top: 1px solid var(--sage-border); margin: 12px 0;">
-                            <span class="info-label"><i class="fas fa-barcode" style="color: var(--sage-dark);"></i> Resi Ekspedisi (Lacak Paket)</span>
-                            <span class="info-value" style="font-size: 16px; color: #0369A1; font-family: monospace; letter-spacing: 1px; margin-top: 4px;">{{ $klaim->resi_pengiriman }}</span>
-                        @endif
+                    <div class="info-block" style="padding: 24px; background: #F9FAFB; border-radius: 20px; border: 1px solid var(--sage-border); box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+                        <span class="info-label" style="display: flex; align-items: center; gap: 8px; color: var(--charcoal); margin-bottom: 12px;">
+                            <i class="fas fa-map-marked-alt" style="color: var(--sage-dark); font-size: 18px;"></i> Alamat Pengiriman
+                        </span>
+                        <div style="font-size: 15px; font-weight: 500; color: #4B5563; line-height: 1.6;">
+                            {{ $klaim->alamat_pengiriman ?? 'Alamat belum diinput.' }}
+                        </div>
                     </div>
 
                     @if ($klaim->alasan)
                     <div class="info-block" style="margin-top: 30px;">
-                        <span class="info-label">Catatan Pembeli / Alasan Klaim</span>
-                        <div style="background: var(--cream-bg); padding: 16px; border-radius: var(--radius-md); font-size: 14px; color: var(--charcoal); margin-top: 6px; border: 1px solid var(--sage-border);">
+                        <span class="info-label">Catatan Dari Anda</span>
+                        <div style="background: var(--white); padding: 16px; border-radius: var(--radius-md); font-size: 14px; color: var(--charcoal); margin-top: 8px; border: 1px solid var(--sage-border); border-left: 4px solid var(--sage-primary);">
                             "{{ $klaim->alasan }}"
                         </div>
                     </div>
@@ -237,51 +297,42 @@
 
                     @if ($klaim->status_admin_note)
                     <div class="admin-note">
-                        <div style="font-size: 11px; text-transform: uppercase; color: var(--sage-dark); margin-bottom: 4px;">Balasan dari Admin / CS Thrift-In:</div>
+                        <div style="font-size: 11px; text-transform: uppercase; color: var(--sage-dark); margin-bottom: 4px;">Balasan Admin:</div>
                         {{ $klaim->status_admin_note }}
-                    </div>
-                    @endif
-
-                    @if ($statusStr == 'Pending' || str_contains(strtolower($statusStr), 'menunggu'))
-                    <div style="margin-top: 40px; padding-top: 24px; border-top: 1px dashed var(--sage-border);">
-                        
-                        <!-- Tombol Edit (Tergantung route ada atau tidak) -->
-                        <a href="{{ route('customer.klaim.edit', $klaim->id) }}" class="btn-action btn-edit" style="margin-bottom: 12px;">
-                            <i class="fas fa-edit"></i> Edit Catatan / Pesanan
-                        </a>
-                        
-                        <form action="{{ route('customer.klaim.destroy', $klaim->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan klaim pesanan ini?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn-action btn-cancel">
-                                <i class="fas fa-trash-alt"></i> Batalkan / Hapus Pesanan Ini
-                            </button>
-                        </form>
                     </div>
                     @endif
                 </div>
 
                 <!-- KANAN: PREVIEW BARANG -->
                 <div>
-                    <div class="product-preview">
-                        <img src="{{ asset('storage/' . ($klaim->item->foto_path ?? 'images/placeholder.jpg')) }}" alt="Foto Baju" class="product-image">
+                    <div class="product-preview" style="position: sticky; top: 120px;">
+                        <img src="{{ asset('storage/' . ($klaim->item->foto_path ?? 'images/placeholder.jpg')) }}" alt="Foto Baju" class="product-image" style="width: 200px; height: 200px;">
                         <div class="product-name">
                             <a href="{{ route('katalog.show', $klaim->item_id) }}">{{ $klaim->item->nama_item ?? 'Produk Dihapus/Hilang' }}</a>
                         </div>
                         <div class="product-price">Rp {{ number_format($klaim->item->harga ?? 0, 0, ',', '.') }}</div>
-                        <div style="font-size: 13px; font-weight: 700; color: var(--sage-dark); padding: 4px 12px; background: var(--white); border-radius: 50px;">
-                            <i class="fas fa-tag"></i> {{ $klaim->item->kategori->nama_kategori ?? 'Kategori Umum' }}
+                        <div style="font-size: 13px; font-weight: 700; color: var(--sage-dark); padding: 6px 16px; background: var(--white); border-radius: 50px; border: 1px solid var(--sage-border); margin-top: 8px;">
+                            <i class="fas fa-tags"></i> {{ $klaim->item->kategori->nama_kategori ?? 'Kategori Umum' }}
                         </div>
+                        
+                        @if ($statusStr == 'Pending' || str_contains(strtolower($statusStr), 'menunggu'))
+                        <div style="width: 100%; margin-top: 24px; padding-top: 24px; border-top: 1px dashed var(--sage-border);">
+                            <form action="{{ route('customer.klaim.destroy', $klaim->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini? Stok baju akan dikembalikan ke katalog.');" style="width: 100%;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn-action btn-cancel" style="border-radius: 12px; padding: 14px; width: 100%;">
+                                    <i class="fas fa-times-circle"></i> Batalkan Pesanan
+                                </button>
+                            </form>
+                        </div>
+                        @else
+                        <div style="width: 100%; margin-top: 24px; padding-top: 24px; border-top: 1px dashed var(--sage-border);">
+                            <div style="font-size: 12px; color: var(--sage-dark); text-align: center; font-weight: 600;">
+                                <i class="fas fa-lock"></i> Pesanan sedang diproses dan tidak dapat dibatalkan.
+                            </div>
+                        </div>
+                        @endif
                     </div>
-                    
-                    @if ($klaim->file_bukti)
-                    <div style="margin-top: 24px; text-align: center;">
-                        <span style="font-size: 12px; font-weight: 700; color: var(--sage-dark); text-transform: uppercase;">File Bukti Tambahan</span><br>
-                        <a href="{{ asset('storage/' . $klaim->file_bukti) }}" target="_blank" class="btn" style="background: var(--white); border: 1px solid var(--sage-border); font-size: 13px; padding: 8px 16px; margin-top: 8px;">
-                            <i class="fas fa-external-link-alt"></i> Lihat File Terlampir
-                        </a>
-                    </div>
-                    @endif
                 </div>
 
             </div>

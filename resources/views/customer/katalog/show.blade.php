@@ -316,6 +316,12 @@
                 @else
                     <a href="{{ route('customer.klaim.index') }}" class="btn btn-primary">Profil Saya</a>
                 @endcan
+                <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+                    @csrf
+                    <button type="submit" class="btn btn-outline" style="border-radius: 50px; padding: 10px 20px; font-size: 14px;">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </form>
             @else
                 <a href="{{ route('login') }}" class="btn btn-primary">Login</a>
             @endauth
@@ -420,29 +426,42 @@
     <div class="modal-backdrop" id="checkoutBackdrop" onclick="closeCheckout()"></div>
     <div class="checkout-modal" id="checkoutModal">
         <div class="modal-header">
-            <h3>Checkout & Pengiriman <i class="fas fa-box" style="margin-left: 8px; color: var(--sage-dark);"></i></h3>
+            <h3 class="modal-title">Konfirmasi Checkout <i class="fas fa-shopping-cart" style="margin-left: 8px; color: var(--sage-dark);"></i></h3>
             <button type="button" class="btn-close-modal" onclick="closeCheckout()"><i class="fas fa-times"></i></button>
         </div>
         
         <form action="{{ route('klaim.item', $item) }}" method="POST">
             @csrf
             <div class="modal-body">
-                <div class="alert-message alert-success" style="padding: 12px; font-size: 14px; margin-bottom: 24px;">
-                    <i class="fas fa-info-circle"></i> Item "{{ Str::limit($item->nama_item, 20) }}" masih tersedia. Silakan isi alamat pengiriman paket Anda.
+                <!-- Item Summary (New Shopee-style) -->
+                <div style="display: flex; gap: 16px; padding: 16px; background: #F9FAFB; border-radius: 16px; margin-bottom: 24px; border: 1px solid var(--sage-border);">
+                    <img src="{{ asset('storage/' . ($item->foto_path ?? 'images/placeholder.jpg')) }}" 
+                         style="width: 80px; height: 80px; border-radius: 12px; object-fit: cover; border: 2px solid var(--white);">
+                    <div style="display: flex; flex-direction: column; justify-content: center;">
+                        <span style="font-size: 16px; font-weight: 800; color: var(--charcoal);">{{ Str::limit($item->nama_item, 35) }}</span>
+                        <span style="font-size: 14px; font-weight: 700; color: var(--sage-dark);">Rp {{ number_format($item->harga, 0, ',', '.') }}</span>
+                        <span style="font-size: 11px; color: #8C8C85; margin-top: 4px;"><i class="fas fa-tag"></i> {{ $item->kategori->nama_kategori ?? 'Lainnya' }} • Size {{ $item->ukuran }}</span>
+                    </div>
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="alamat_pengiriman">Alamat Lengkap Pengiriman</label>
+                    <label for="alamat_pengiriman">Alamat Lengkap Pengiriman Paket</label>
                     <textarea name="alamat_pengiriman" id="alamat_pengiriman" class="form-control" rows="4" 
-                              placeholder="Masukkan detail jalan, RT/RW, kecamatan, kota, dan kodepos..." required minlength="10"></textarea>
+                              placeholder="Contoh: Jl. Melati No. 12, RT 01/02, Kec. Merdeka, Kota Bandung, 40123" required minlength="10"></textarea>
                 </div>
-                <p style="font-size: 13px; color: var(--sage-dark); margin-top: -10px;">
-                    <i class="fas fa-truck"></i> Ongkos kirim dibayarkan tunai ke kurir (COD Ongkir).
-                </p>
+
+                <div style="display: flex; align-items: flex-start; gap: 12px; background: #FFF9E6; padding: 12px 16px; border-radius: 12px; border: 1px solid #FFEBB3;">
+                    <i class="fas fa-truck" style="color: #B48A00; margin-top: 3px;"></i>
+                    <p style="font-size: 12px; color: #856404; font-weight: 600; line-height: 1.4;">
+                        Metode: Pengiriman Reguler (COD Ongkir). Anda hanya perlu membayar ongkos kirim ke kurir saat barang sampai.
+                    </p>
+                </div>
             </div>
             
             <div class="modal-footer">
-                <button type="submit" class="btn-submit-order">Pesanan Terkonfirmasi - Beli Sekarang</button>
+                <button type="submit" class="btn-submit-order" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <i class="fas fa-check-circle"></i> Buat Pesanan Sekarang
+                </button>
             </div>
         </form>
     </div>

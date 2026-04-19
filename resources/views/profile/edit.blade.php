@@ -135,6 +135,12 @@
         </a>
         <div class="nav-links">
             <a href="{{ route('customer.klaim.index') }}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Kembali ke Dasbor</a>
+            <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+                @csrf
+                <button type="submit" class="btn btn-outline" style="border-radius: 50px; padding: 10px 20px; font-size: 14px;">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </form>
         </div>
     </nav>
 

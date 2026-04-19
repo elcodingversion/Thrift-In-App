@@ -426,6 +426,12 @@
                 @else
                     <a href="{{ route('customer.klaim.index') }}" class="btn btn-primary">Profil Saya</a>
                 @endcan
+                <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+                    @csrf
+                    <button type="submit" class="btn btn-outline" style="border-radius: 50px; padding: 10px 20px; font-size: 14px;">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </form>
             @else
                 <a href="{{ route('login') }}" class="btn btn-primary">Login</a>
             @endauth
